@@ -50,7 +50,7 @@ namespace Prototype.TopDown2DNetworked
 			_parent = parent;
 
 			_selfObject = MonoBehaviour.Instantiate(_loadObjectsManager.GetObjectByPath<GameObject>($"Prefabs/Gameplay/Players/Player_{Index}"),
-				new Vector2(Random.Range(-7f, 7f), Random.Range(-4f, 4f)),
+				Vector3.zero,
 				Quaternion.identity);
 			_selfObject.transform.SetParent(_parent, false);
 
@@ -67,6 +67,11 @@ namespace Prototype.TopDown2DNetworked
 
 			_hp = Constants.MaxPlayerHP;
 			_marker.color = IsLocal ? Color.green : Color.red;
+
+			if (isLocal)
+			{
+				_selfObject.transform.position = new Vector2(Random.Range(-7f, 7f), Random.Range(-4f, 4f));
+			}
 		}
 
 		public void Update()
@@ -114,6 +119,9 @@ namespace Prototype.TopDown2DNetworked
 
 			_netDistance = Vector3.Distance(_selfObject.transform.position, _targetPositon);
 			_netAngle = Quaternion.Angle(_viewObject.transform.rotation, _targetRotation);
+
+			if (_netDistance > 1f)
+				_selfObject.transform.position = _targetPositon;
 		}
 
 		public void DestroyFromNetwork()
